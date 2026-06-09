@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tasti
 
-## Getting Started
+Carica un file **MIDI** o uno spartito **MusicXML** (pianoforte) e scopri, sulla
+tastiera, **quali tasti premere** per ogni accordo, sull'ottava giusta. Pensato
+per chi non conosce la teoria musicale.
 
-First, run the development server:
+- Traccia scorrevole stile piano-roll: ogni accordo è una colonna di barre.
+- Clic su una nota/accordo → la tastiera evidenzia i tasti e suona l'accordo.
+- Clic su un singolo tasto della tastiera → suona quella nota.
+
+## Avvio
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Apri http://localhost:3000 e trascina un file `.mid`, `.midi`, `.musicxml`,
+`.mxl` o un PDF.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Spartiti PDF (OMR)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+PDF **e immagini** (png/jpg/tiff/bmp, utile per scansioni/foto) vengono convertiti
+in MusicXML con **Audiveris** (OMR open-source) lato server, poi caricati nel
+viewer. Audiveris include il proprio runtime Java (nessuna installazione Java
+separata).
 
-## Learn More
+Setup:
 
-To learn more about Next.js, take a look at the following resources:
+1. Scarica l'MSI **console** di Audiveris da
+   https://github.com/Audiveris/audiveris/releases (es. `windowsConsole`).
+2. L'MSI richiede admin per l'install normale. In alternativa, estrazione senza
+   admin: `msiexec /a Audiveris-...-windowsConsole.msi /qn TARGETDIR="C:\percorso"`.
+3. Copia `.env.example` in `.env.local` e imposta `AUDIVERIS_CMD` al launcher:
+   `AUDIVERIS_CMD="C:\percorso\Audiveris\Audiveris.exe"`
+4. Riavvia `npm run dev`. Ora puoi trascinare un PDF o un'immagine.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Nota: l'OMR è automatico ma imperfetto. Spartiti complessi vanno corretti a mano
+in un editor (es. MuseScore) prima di esportare il MusicXML definitivo. La
+conversione può richiedere da pochi secondi a oltre un minuto.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## File di esempio
 
-## Deploy on Vercel
+Una progressione C–F–G–C già pronta in `public/samples/`. Per rigenerarla:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+node public/samples/make-samples.mjs
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Come funziona
+
+| Pezzo | File |
+|---|---|
+| Lettura MIDI | `lib/parseMidi.ts` (`@tonejs/midi`) |
+| Lettura MusicXML | `lib/parseMusicXml.ts` (parser DOM dedicato) |
+| Lettura .mxl (zip) | `lib/mxl.ts` (`fflate`) |
+| Conversione PDF (OMR) | `app/api/omr/route.ts` (Audiveris) |
+| Modello unico note | `lib/types.ts` |
+| Rilevamento accordi | `lib/chords.ts` (`@tonaljs/tonal`) |
+| Audio pianoforte | `lib/audio.ts` (`tone`, campioni Salamander) |
+| Geometria tastiera | `lib/keyboard.ts` (condivisa roll + tastiera) |
+
+Entrambi i formati confluiscono nello stesso modello `Song`, quindi l'interfaccia
+non sa né deve sapere quale formato è stato caricato.

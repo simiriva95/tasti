@@ -1,0 +1,15 @@
+{
+  "name": "tasti-omr-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "fflate": "^0.8.3",
+    "multer": "^1.4.5-lts.1",
+    "pdfjs-dist": "^6.0.227"
+  }
+}
