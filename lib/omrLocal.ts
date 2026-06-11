@@ -76,8 +76,9 @@ export async function runLocalOmr(
       const child = spawn(cmd, ["-batch", "-export", "-output", outDir, input], {
         shell: true,
       });
-      let stderr = "";
-      child.stderr.on("data", (d) => (stderr += d.toString()));
+      let log = "";
+      child.stderr.on("data", (d) => (log += d.toString()));
+      child.stdout.on("data", (d) => (log += d.toString()));
       child.on("error", reject);
       const timer = setTimeout(() => {
         child.kill();
@@ -86,7 +87,14 @@ export async function runLocalOmr(
       child.on("close", (code) => {
         clearTimeout(timer);
         if (code === 0) resolve();
-        else reject(new Error(stderr.slice(-600) || `Audiveris exit ${code}`));
+        else {
+          const warns = log
+            .split("\n")
+            .filter((l) => /WARN|ERROR|Exception/i.test(l))
+            .slice(-6)
+            .join("\n");
+          reject(new Error(warns || `Audiveris exit ${code}`));
+        }
       });
     });
 

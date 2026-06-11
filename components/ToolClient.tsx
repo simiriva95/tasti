@@ -16,6 +16,8 @@ import PianoStage from "@/components/PianoStage";
 import { loadSong } from "@/lib/loadSong";
 import { parseMusicXml } from "@/lib/parseMusicXml";
 import { mxlToXml } from "@/lib/mxl";
+import { cleanPhoto } from "@/lib/cleanPhoto";
+import { mergeSongs, songToMidiBytes } from "@/lib/songMerge";
 import { detectChords } from "@/lib/chords";
 import type { Song } from "@/lib/types";
 
@@ -50,8 +52,12 @@ export default function ToolClient({ user }: { user: SessionUser | null }) {
 
   const events = useMemo(() => (song ? detectChords(song) : []), [song]);
 
-  async function omrToSong(file: File): Promise<{ song: Song; xml: string }> {
-    setLoadingText("Sto leggendo lo spartito... (puo' richiedere un minuto)");
+  async function omrToSong(
+    file: File,
+    quiet = false
+  ): Promise<{ song: Song; xml: string }> {
+    if (!quiet)
+      setLoadingText("Sto leggendo lo spartito... (puo' richiedere un minuto)");
     const form = new FormData();
     form.append("file", file);
     const res = await fetch("/api/omr", { method: "POST", body: form });
@@ -61,11 +67,65 @@ export default function ToolClient({ user }: { user: SessionUser | null }) {
     return { song: parsed, xml: data.xml };
   }
 
-  async function handleFile(file: File) {
+  const IMAGE_RE = /\.(png|jpe?g|tiff?|bmp)$/i;
+
+  /** Batch of photos of a paper score: OMR each page, then stitch the result
+   *  into one song (and a downloadable/savable MIDI). */
+  async function handlePhotoBatch(files: File[]) {
+    const pages = [...files].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { numeric: true })
+    );
+    const songsParsed: Song[] = [];
+    for (let i = 0; i < pages.length; i++) {
+      setLoadingText(`Leggo pagina ${i + 1} di ${pages.length}...`);
+      const cleaned = await cleanPhoto(pages[i]);
+      try {
+        const { song: s } = await omrToSong(cleaned, true);
+        songsParsed.push(s);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "conversione fallita";
+        throw new Error(`Pagina ${i + 1} (${pages[i].name}): ${msg}`);
+      }
+    }
+    const name = pages[0].name.replace(/\.[^.]+$/, "");
+    const merged = mergeSongs(songsParsed, name);
+    if (merged.notes.length === 0) {
+      throw new Error("Non ho trovato note nelle foto.");
+    }
+    setSong(merged);
+    setSavable({
+      name,
+      format: "midi",
+      dataB64: bytesToB64(songToMidiBytes(merged)),
+    });
+  }
+
+  async function handleFiles(files: File[]) {
     setLoading(true);
     setLoadingText(undefined);
     setError(null);
     setSaveState("idle");
+    try {
+      if (files.length > 1) {
+        if (!files.every((f) => IMAGE_RE.test(f.name))) {
+          throw new Error(
+            "Puoi caricare più file solo se sono tutte foto dello spartito."
+          );
+        }
+        await handlePhotoBatch(files);
+        return;
+      }
+      await handleFile(files[0]);
+      return;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Errore nella lettura dei file.");
+    } finally {
+      setLoading(false);
+      setLoadingText(undefined);
+    }
+  }
+
+  async function handleFile(file: File) {
     try {
       const name = file.name.replace(/\.[^.]+$/, "");
       let parsed: Song;
@@ -216,7 +276,7 @@ export default function ToolClient({ user }: { user: SessionUser | null }) {
             </p>
           </div>
           <FileDrop
-            onFile={handleFile}
+            onFiles={handleFiles}
             loading={loading}
             loadingText={loadingText}
             error={error}
