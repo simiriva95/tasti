@@ -52,19 +52,49 @@ export default function ToolClient({ user }: { user: SessionUser | null }) {
 
   const events = useMemo(() => (song ? detectChords(song) : []), [song]);
 
+  /** Poll an async OMR job until it finishes (see omr-service). Slow scores no
+   *  longer hit any request timeout — the work runs in the background. */
+  async function pollOmr(
+    jobId: string,
+    quiet: boolean
+  ): Promise<{ xml: string; name?: string; bpm?: number }> {
+    const started = Date.now();
+    const MAX_MS = 16 * 60 * 1000;
+    for (;;) {
+      await new Promise((r) => setTimeout(r, 3000));
+      const res = await fetch(`/api/omr/${jobId}`);
+      if (res.status === 404)
+        throw new Error("Sessione scaduta, ricarica il file.");
+      const d = await res.json();
+      if (d.status === "done") return d;
+      if (d.status === "error")
+        throw new Error(d.error ?? "Conversione fallita.");
+      if (Date.now() - started > MAX_MS)
+        throw new Error("Conversione troppo lunga. Prova uno spartito più corto.");
+      if (!quiet) setLoadingText("Sto leggendo lo spartito... ci lavoro");
+    }
+  }
+
   async function omrToSong(
     file: File,
     quiet = false
   ): Promise<{ song: Song; xml: string }> {
     if (!quiet)
-      setLoadingText("Sto leggendo lo spartito... (puo' richiedere un minuto)");
+      setLoadingText("Sto leggendo lo spartito... (puo' richiedere qualche minuto)");
     const form = new FormData();
     form.append("file", file);
     const res = await fetch("/api/omr", { method: "POST", body: form });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error ?? "Conversione PDF fallita.");
-    const parsed = parseMusicXml(data.xml, data.name ?? file.name, data.bpm ?? 120);
-    return { song: parsed, xml: data.xml };
+    if (!res.ok && !data.jobId)
+      throw new Error(data.error ?? "Conversione PDF fallita.");
+    // Async path returns a jobId to poll; local-dev fallback returns xml directly.
+    const result = data.jobId ? await pollOmr(data.jobId, quiet) : data;
+    const parsed = parseMusicXml(
+      result.xml,
+      result.name ?? file.name,
+      result.bpm ?? 120
+    );
+    return { song: parsed, xml: result.xml };
   }
 
   const IMAGE_RE = /\.(png|jpe?g|tiff?|bmp)$/i;

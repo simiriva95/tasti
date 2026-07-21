@@ -14,10 +14,10 @@ const SECRET = process.env.OMR_SERVICE_SECRET;
 const CMD = process.env.AUDIVERIS_CMD || "audiveris";
 const USE_XVFB = process.env.USE_XVFB === "1";
 const PORT = process.env.PORT || 8080;
-// Cap just under Vercel's 300s function limit (the Next /api/omr route waits
-// on this fetch). Render free tier is ~0.1 CPU, so Audiveris is slow; this
-// gives the biggest margin we can without the caller timing out first.
-const OMR_TIMEOUT_MS = 260 * 1000;
+// Jobs run in the background (see below), decoupled from the HTTP request, so
+// this is no longer bounded by the caller's 300s limit. Generous cap for slow
+// free-tier CPU on heavy scores.
+const OMR_TIMEOUT_MS = 15 * 60 * 1000;
 const ALLOWED = /\.(pdf|png|jpe?g|tiff?|bmp)$/i;
 
 const upload = multer({ limits: { fileSize: 20 * 1024 * 1024 } });
@@ -25,7 +25,20 @@ const app = express();
 
 app.get("/", (_req, res) => res.json({ ok: true }));
 
-app.post("/omr", upload.single("file"), async (req, res) => {
+// ── Async jobs ──────────────────────────────────────────────────────────
+// Audiveris is slow; a synchronous request would hit the caller's 300s limit
+// (Vercel). Instead POST /omr enqueues and returns a jobId immediately, the
+// work runs in the background, and the client polls GET /omr/:id. In-memory
+// store is fine: a lost job on restart just means the user re-uploads.
+const jobs = new Map(); // id -> { status, result?, error?, ts }
+let seq = 0;
+
+function pruneJobs() {
+  const cutoff = Date.now() - 20 * 60 * 1000;
+  for (const [id, j] of jobs) if (j.ts < cutoff) jobs.delete(id);
+}
+
+app.post("/omr", upload.single("file"), (req, res) => {
   if (!SECRET || req.get("x-omr-secret") !== SECRET) {
     return res.status(401).json({ error: "unauthorized" });
   }
@@ -33,28 +46,49 @@ app.post("/omr", upload.single("file"), async (req, res) => {
   const ext = (req.file.originalname.match(ALLOWED) || [])[1]?.toLowerCase();
   if (!ext) return res.status(400).json({ error: "Tipo non supportato." });
 
+  pruneJobs();
+  const id = `${Date.now().toString(36)}-${(seq++).toString(36)}`;
+  jobs.set(id, { status: "pending", ts: Date.now() });
+  res.status(202).json({ jobId: id });
+
+  // Fire-and-forget: keep processing after the response is sent.
+  runJob(id, req.file, ext);
+});
+
+app.get("/omr/:id", (req, res) => {
+  if (!SECRET || req.get("x-omr-secret") !== SECRET) {
+    return res.status(401).json({ error: "unauthorized" });
+  }
+  const j = jobs.get(req.params.id);
+  if (!j) return res.status(404).json({ error: "Job non trovato (scaduto?)." });
+  if (j.status === "done") return res.json({ status: "done", ...j.result });
+  if (j.status === "error") return res.json({ status: "error", error: j.error });
+  return res.json({ status: "pending" });
+});
+
+async function runJob(id, file, ext) {
   let work = null;
   try {
     work = await mkdtemp(join(tmpdir(), "omr-"));
     const outDir = join(work, "out");
     const input = join(work, `input.${ext}`);
-    await writeFile(input, req.file.buffer);
+    await writeFile(input, file.buffer);
 
-    const bpm = ext === "pdf" ? await detectPdfTempo(req.file.buffer) : null;
+    const bpm = ext === "pdf" ? await detectPdfTempo(file.buffer) : null;
     await runAudiveris(input, outDir);
     const xml = await readResult(outDir);
 
-    res.json({
-      xml,
-      name: req.file.originalname.replace(/\.[^.]+$/, ""),
-      bpm,
+    jobs.set(id, {
+      status: "done",
+      ts: Date.now(),
+      result: { xml, name: file.originalname.replace(/\.[^.]+$/, ""), bpm },
     });
   } catch (e) {
-    res.status(500).json({ error: String(e?.message || e) });
+    jobs.set(id, { status: "error", ts: Date.now(), error: String(e?.message || e) });
   } finally {
     if (work) await rm(work, { recursive: true, force: true }).catch(() => {});
   }
-});
+}
 
 function runAudiveris(input, outDir) {
   const args = ["-batch", "-export", "-output", outDir, input];
