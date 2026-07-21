@@ -35,11 +35,11 @@ export default function FileDrop({ onFiles, loading, loadingText, error }: Props
         }}
         className={`flex w-full flex-col items-center gap-4 rounded-2xl border-2 border-dashed px-8 py-16 text-center transition ${
           dragging
-            ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30"
-            : "border-zinc-300 hover:border-emerald-400 dark:border-zinc-700"
+            ? "border-[var(--ch-brass)] bg-[var(--ch-brass)]/10"
+            : "border-[var(--ch-line-strong)] hover:border-[var(--ch-brass)]"
         }`}
       >
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ch-brass)]/12 text-[var(--ch-brass)]">
           {loading ? (
             <FileAudioIcon size={28} weight="duotone" className="animate-pulse" />
           ) : (

@@ -12,6 +12,18 @@ export interface Theme {
 
 export const THEMES: Theme[] = [
   {
+    id: "concerto",
+    name: "Concerto",
+    // Warm brass ramp, deep bronze (low notes) → pale gold (high notes).
+    stops: [
+      [150, 92, 40],
+      [193, 129, 58],
+      [209, 163, 90],
+      [230, 197, 140],
+      [242, 225, 190],
+    ],
+  },
+  {
     id: "vaporwave",
     name: "Vaporwave",
     stops: [
@@ -68,7 +80,7 @@ export const THEMES: Theme[] = [
   },
 ];
 
-export const DEFAULT_STOPS = THEMES[0].stops;
+export const DEFAULT_STOPS = THEMES[0].stops; // Concerto
 
 const FIRST = 21; // A0
 const LAST = 108; // C8

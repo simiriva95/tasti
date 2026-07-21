@@ -114,7 +114,7 @@ export default function PianoStage({ song, events }: Props) {
     ctx.clearRect(0, 0, w, h);
 
     // Faint octave guide lines at every C.
-    ctx.strokeStyle = "rgba(170,150,255,0.07)";
+    ctx.strokeStyle = "rgba(210,180,120,0.06)";
     ctx.lineWidth = 1;
     for (const key of baseLayout.keys) {
       if (key.midi % 12 === 0 && !isBlackKey(key.midi)) {
@@ -178,16 +178,16 @@ export default function PianoStage({ song, events }: Props) {
 
     // Glowing vaporwave hit line + soft bloom band above it.
     const bloom = ctx.createLinearGradient(0, hitY - 26, 0, hitY);
-    bloom.addColorStop(0, "rgba(199,143,232,0)");
-    bloom.addColorStop(1, "rgba(199,143,232,0.18)");
+    bloom.addColorStop(0, "rgba(209,163,90,0)");
+    bloom.addColorStop(1, "rgba(209,163,90,0.18)");
     ctx.fillStyle = bloom;
     ctx.fillRect(0, hitY - 26, w, 26);
 
     const line = ctx.createLinearGradient(0, 0, w, 0);
-    line.addColorStop(0, "#ff8fd0");
-    line.addColorStop(0.5, "#9b9bf0");
-    line.addColorStop(1, "#8ef0dc");
-    ctx.shadowColor = "rgba(180,150,255,0.9)";
+    line.addColorStop(0, "#b9813a");
+    line.addColorStop(0.5, "#e6c58c");
+    line.addColorStop(1, "#b9813a");
+    ctx.shadowColor = "rgba(220,180,110,0.9)";
     ctx.shadowBlur = 16;
     ctx.strokeStyle = line;
     ctx.lineWidth = 2.5;
@@ -548,10 +548,10 @@ export default function PianoStage({ song, events }: Props) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Row 1: playback */}
-      <div className="flex shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex shrink-0 items-center gap-3 border-b border-[var(--ch-line)] bg-[var(--ch-surface)] px-4 py-2.5">
         <button
           onClick={isPlaying ? pause : play}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition active:scale-95 hover:bg-emerald-600"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--ch-brass)] text-[var(--ch-bg-deep)] transition active:scale-95 hover:bg-[var(--ch-ivory)]"
           aria-label={isPlaying ? "Pausa" : "Play"}
         >
           {isPlaying ? (
@@ -562,13 +562,13 @@ export default function PianoStage({ song, events }: Props) {
         </button>
         <button
           onClick={restart}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-zinc-300 text-zinc-600 transition hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--ch-line-strong)] text-[var(--ch-muted)] transition hover:bg-white/5"
           aria-label="Ricomincia"
         >
           <ArrowCounterClockwiseIcon size={16} weight="bold" />
         </button>
 
-        <span className="w-12 text-right font-mono text-xs text-zinc-500">
+        <span className="w-12 text-right font-mono text-xs text-[var(--ch-faint)]">
           {fmt(uiTime)}
         </span>
         <input
@@ -578,20 +578,20 @@ export default function PianoStage({ song, events }: Props) {
           step={0.01}
           value={Math.min(Math.max(uiTime, 0), stageDuration)}
           onChange={(e) => seek(Number(e.target.value))}
-          className="h-1.5 flex-1 cursor-pointer accent-emerald-500"
+          className="h-1.5 flex-1 cursor-pointer accent-[var(--ch-brass)]"
           aria-label="Posizione"
         />
-        <span className="w-12 font-mono text-xs text-zinc-500">
+        <span className="w-12 font-mono text-xs text-[var(--ch-faint)]">
           {fmt(stageDuration)}
         </span>
 
-        <span className="ml-1 min-w-24 text-right text-lg font-semibold tracking-tight">
+        <span className="display ml-1 min-w-24 text-right text-xl text-[var(--ch-ivory)]">
           {label || "—"}
         </span>
       </div>
 
       {/* Row 2: settings */}
-      <div className="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-2 border-b border-zinc-200 bg-zinc-50 px-4 py-2 text-xs dark:border-zinc-800 dark:bg-zinc-950/40">
+      <div className="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-2 border-b border-[var(--ch-line)] bg-[var(--ch-bg-deep)] px-4 py-2 text-xs text-[var(--ch-muted)]">
         {/* Instrument */}
         <Group label="Suono">
           {(Object.keys(INSTRUMENTS) as InstrumentId[]).map((id) => (
@@ -667,7 +667,7 @@ export default function PianoStage({ song, events }: Props) {
                   title={t.name}
                   className={`h-6 w-6 rounded-full ring-offset-1 transition ${
                     on
-                      ? "ring-2 ring-emerald-400 ring-offset-zinc-900"
+                      ? "ring-2 ring-[var(--ch-brass)] ring-offset-[var(--ch-bg)]"
                       : "ring-1 ring-white/20 hover:ring-white/50"
                   }`}
                   style={{ backgroundImage: themeCss(t.stops) }}
@@ -701,7 +701,7 @@ export default function PianoStage({ song, events }: Props) {
         className="relative min-h-0 flex-1"
         style={{
           background:
-            "radial-gradient(130% 70% at 50% 100%, rgba(150,90,200,0.30), transparent 60%), linear-gradient(180deg, #1a1030 0%, #0c0718 100%)",
+            "radial-gradient(130% 70% at 50% 100%, oklch(0.72 0.13 72 / 0.22), transparent 60%), linear-gradient(180deg, oklch(0.17 0.014 66) 0%, oklch(0.12 0.012 66) 100%)",
         }}
       >
         <canvas
@@ -712,9 +712,9 @@ export default function PianoStage({ song, events }: Props) {
       </div>
 
       <div
-        className="shrink-0 shadow-[0_-12px_32px_rgba(120,80,180,0.25)]"
+        className="shrink-0 shadow-[0_-12px_32px_rgba(90,60,20,0.3)]"
         style={{
-          background: "linear-gradient(180deg, #14091f 0%, #1d1130 100%)",
+          background: "linear-gradient(180deg, oklch(0.13 0.012 66) 0%, oklch(0.18 0.014 66) 100%)",
           padding: "0",
         }}
       >
@@ -741,7 +741,7 @@ function Group({
       <span className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">
         {label}
       </span>
-      <div className="flex items-center gap-0.5 rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800">
+      <div className="flex items-center gap-0.5 rounded-lg bg-[var(--ch-surface-2)] p-0.5">
         {children}
       </div>
     </div>
@@ -762,8 +762,8 @@ function Seg({
       onClick={onClick}
       className={`rounded-md px-2 py-1 text-xs font-medium transition ${
         active
-          ? "bg-emerald-500 text-white"
-          : "text-zinc-600 hover:bg-zinc-200 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          ? "bg-[var(--ch-brass)] text-[var(--ch-bg-deep)]"
+          : "text-[var(--ch-muted)] hover:bg-white/8"
       }`}
     >
       {children}

@@ -193,15 +193,15 @@ export default function ToolClient({ user }: { user: SessionUser | null }) {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-      <header className="flex shrink-0 items-center justify-between border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
+    <div className="flex min-h-[100dvh] flex-col bg-[var(--ch-bg)] text-[var(--ch-text)]">
+      <header className="flex shrink-0 items-center justify-between border-b border-[var(--ch-line)] px-5 py-3">
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-white">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--ch-brass)] text-[var(--ch-bg-deep)]">
             <PianoKeysIcon size={20} weight="fill" />
           </span>
           <div className="leading-tight">
-            <h1 className="text-base font-semibold tracking-tight">Tasti</h1>
-            <p className="text-xs text-zinc-500">Vedi quali tasti suonare</p>
+            <h1 className="display text-lg leading-none text-[var(--ch-ivory)]">Tasti</h1>
+            <p className="mt-0.5 text-xs text-[var(--ch-faint)]">Vedi quali tasti suonare</p>
           </div>
         </Link>
 
@@ -219,7 +219,7 @@ export default function ToolClient({ user }: { user: SessionUser | null }) {
             <button
               onClick={save}
               disabled={saveState !== "idle"}
-              className="flex items-center gap-2 rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:opacity-60"
+              className="flex items-center gap-2 rounded-lg bg-[var(--ch-brass)] px-3 py-1.5 text-sm font-semibold text-[var(--ch-bg-deep)] transition hover:bg-[var(--ch-ivory)] disabled:opacity-60"
             >
               <FloppyDiskIcon size={16} weight="bold" />
               {saveState === "saved"
@@ -266,10 +266,13 @@ export default function ToolClient({ user }: { user: SessionUser | null }) {
       {!song ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-8 px-5 py-12">
           <div className="max-w-lg text-center">
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            <h2
+              className="display text-[var(--ch-ivory)]"
+              style={{ fontSize: "clamp(2rem, 5vw, 2.9rem)", lineHeight: 1.05 }}
+            >
               Carica un brano, vedi i tasti.
             </h2>
-            <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+            <p className="mt-4 leading-relaxed text-[var(--ch-muted)]">
               Apri un file MIDI, uno spartito MusicXML o un PDF. Premi play: le
               note scendono verso la tastiera e i tasti si illuminano. Clicca una
               nota per fermarti e vedere l&apos;accordo.

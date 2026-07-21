@@ -17,13 +17,15 @@ export default function OpengraphImage() {
           alignItems: "center",
           justifyContent: "center",
           background:
-            "radial-gradient(120% 70% at 50% 0%, #5a2d7a, transparent), linear-gradient(180deg, #1a1030, #0c0718)",
-          color: "white",
-          fontFamily: "sans-serif",
+            "radial-gradient(120% 70% at 50% 0%, #4a3818, transparent), linear-gradient(180deg, #1a1512, #0f0c0a)",
+          color: "#f0e9db",
+          fontFamily: "serif",
         }}
       >
-        <div style={{ fontSize: 96, fontWeight: 700, letterSpacing: -2 }}>Tasti</div>
-        <div style={{ fontSize: 40, color: "#d8c8ff", marginTop: 12 }}>
+        <div style={{ fontSize: 104, fontWeight: 500, letterSpacing: -2, color: "#f0e9db" }}>
+          Tasti
+        </div>
+        <div style={{ fontSize: 38, color: "#d9a95a", marginTop: 14 }}>
           Vedi quali tasti suonare
         </div>
       </div>

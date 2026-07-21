@@ -83,11 +83,11 @@ export default function LibraryClient() {
 
   if (song) {
     return (
-      <div className="flex min-h-[100dvh] flex-col bg-zinc-50 dark:bg-zinc-950">
-        <header className="flex shrink-0 items-center gap-3 border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
+      <div className="flex min-h-[100dvh] flex-col bg-[var(--ch-bg)]">
+        <header className="flex shrink-0 items-center gap-3 border-b border-[var(--ch-line)] px-5 py-3">
           <button
             onClick={() => setSong(null)}
-            className="flex items-center gap-2 rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-700"
+            className="flex items-center gap-2 rounded-lg border border-[var(--ch-line-strong)] px-3 py-1.5 text-sm font-medium text-[var(--ch-text)] transition hover:bg-white/5"
           >
             <ArrowLeftIcon size={16} weight="bold" />
             Libreria
@@ -99,17 +99,19 @@ export default function LibraryClient() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+    <div className="min-h-[100dvh] bg-[var(--ch-bg)] text-[var(--ch-text)]">
+      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
         <Link href="/app" className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-white">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--ch-brass)] text-[var(--ch-bg-deep)]">
             <PianoKeysIcon size={18} weight="fill" />
           </span>
-          <span className="font-semibold tracking-tight">La tua libreria</span>
+          <span className="display text-xl leading-none text-[var(--ch-ivory)]">
+            La tua libreria
+          </span>
         </Link>
         <Link
           href="/app"
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-700"
+          className="rounded-full border border-[var(--ch-line-strong)] px-4 py-2 text-sm font-medium text-[var(--ch-text)] transition hover:bg-white/5"
         >
           Carica nuovo
         </Link>
@@ -117,10 +119,10 @@ export default function LibraryClient() {
 
       <main className="mx-auto max-w-5xl px-6 py-6">
         {items === null ? (
-          <p className="py-20 text-center text-zinc-500">Carico…</p>
+          <p className="py-20 text-center text-[var(--ch-faint)]">Carico…</p>
         ) : items.length === 0 ? (
-          <div className="py-20 text-center text-zinc-500">
-            <MusicNoteIcon size={32} className="mx-auto mb-3 text-emerald-500" />
+          <div className="py-20 text-center text-[var(--ch-muted)]">
+            <MusicNoteIcon size={32} className="mx-auto mb-3 text-[var(--ch-brass)]" />
             <p>Nessun brano salvato. Caricane uno e premi “Salva”.</p>
           </div>
         ) : (
@@ -128,7 +130,7 @@ export default function LibraryClient() {
             {items.map((item) => (
               <div
                 key={item.id}
-                className="group flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+                className="group flex items-center justify-between rounded-xl border border-[var(--ch-line)] bg-[var(--ch-surface)] p-4 transition hover:border-[var(--ch-line-strong)]"
               >
                 <button
                   onClick={() => open(item)}

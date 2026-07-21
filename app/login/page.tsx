@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth, signIn } from "@/auth";
-import { PianoKeysIcon, GithubLogoIcon } from "@phosphor-icons/react/dist/ssr";
+import { GithubLogoIcon } from "@phosphor-icons/react/dist/ssr";
 
 export const metadata: Metadata = {
   title: "Accedi",
@@ -13,17 +13,26 @@ export default async function LoginPage() {
   if (session?.user) redirect("/app");
 
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-8 bg-[#0c0718] px-6 text-zinc-100">
+    <div className="ch-spotlight flex min-h-[100dvh] flex-col items-center justify-center gap-10 px-6">
       <div className="flex items-center gap-2.5">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-pink-400 to-indigo-400 text-white">
-          <PianoKeysIcon size={22} weight="fill" />
+        <span className="flex h-5 items-end gap-[2px]" aria-hidden="true">
+          <span className="h-5 w-[3px] rounded-sm bg-[var(--ch-ivory)]" />
+          <span className="h-3.5 w-[3px] rounded-sm bg-[var(--ch-brass)]" />
+          <span className="h-5 w-[3px] rounded-sm bg-[var(--ch-ivory)]" />
         </span>
-        <span className="text-xl font-semibold tracking-tight">Tasti</span>
+        <span className="display text-2xl leading-none text-[var(--ch-ivory)]">
+          Tasti
+        </span>
       </div>
 
-      <div className="w-full max-w-sm rounded-2xl bg-white/[0.04] p-8 text-center ring-1 ring-white/10">
-        <h1 className="text-2xl font-semibold tracking-tight">Accedi</h1>
-        <p className="mt-2 text-sm text-zinc-400">
+      <div className="w-full max-w-sm text-center">
+        <h1
+          className="display text-[var(--ch-ivory)]"
+          style={{ fontSize: "clamp(2rem, 5vw, 2.6rem)", lineHeight: 1.05 }}
+        >
+          Accedi.
+        </h1>
+        <p className="mx-auto mt-3 max-w-[34ch] leading-relaxed text-[var(--ch-muted)]">
           Salva i tuoi brani in una libreria personale.
         </p>
 
@@ -35,7 +44,7 @@ export default async function LoginPage() {
         >
           <button
             type="submit"
-            className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-white px-4 py-3 font-medium text-zinc-900 transition hover:bg-zinc-100"
+            className="mt-8 flex w-full items-center justify-center gap-3 rounded-full bg-[var(--ch-brass)] px-4 py-3.5 font-semibold text-[var(--ch-bg-deep)] transition duration-300 hover:bg-[var(--ch-ivory)]"
           >
             <GithubLogoIcon size={20} weight="bold" />
             Continua con GitHub

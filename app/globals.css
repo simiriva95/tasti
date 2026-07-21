@@ -1,55 +1,45 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans-hd);
-  --font-display: var(--font-display);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans-hd), system-ui, sans-serif;
-}
-
 /* ─────────────────────────────────────────────────────────────
-   Concert-hall landing. Scoped to .concert so the app UI is
-   untouched. Warm brown-black + ivory + brass, OKLCH throughout.
+   Concert-hall theme — global. Warm brown-black + ivory + brass,
+   OKLCH throughout. Neutrals tinted toward the brass hue (~78) for
+   cohesion. The whole product (landing + tool + library) shares it.
    ───────────────────────────────────────────────────────────── */
-.concert {
-  /* neutrals tinted toward the brass hue (~78) for cohesion */
+:root {
+  color-scheme: dark;
+
   --ch-bg: oklch(0.15 0.012 66);
   --ch-bg-deep: oklch(0.12 0.012 66);
   --ch-surface: oklch(0.19 0.014 68);
+  --ch-surface-2: oklch(0.23 0.015 68);
   --ch-line: oklch(0.98 0.01 80 / 0.1);
   --ch-line-strong: oklch(0.98 0.01 80 / 0.18);
   --ch-ivory: oklch(0.95 0.012 85);
   --ch-text: oklch(0.9 0.014 82);
   --ch-muted: oklch(0.72 0.016 78);
   --ch-faint: oklch(0.58 0.014 74);
-  /* brass accent — the only saturated colour, used sparingly */
   --ch-brass: oklch(0.82 0.11 82);
   --ch-brass-deep: oklch(0.72 0.13 72);
 
+  --background: var(--ch-bg);
+  --foreground: var(--ch-text);
+}
+
+@theme inline {
+  --color-background: var(--ch-bg);
+  --color-foreground: var(--ch-text);
+  --font-sans: var(--font-sans-hd);
+  --font-display: var(--font-display);
+}
+
+body {
   background: var(--ch-bg);
   color: var(--ch-text);
   font-family: var(--font-sans-hd), system-ui, sans-serif;
 }
 
-.concert .display {
+/* Display face — high-contrast didone, for headings across the product. */
+.display {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 500;
   letter-spacing: -0.015em;
@@ -62,7 +52,7 @@ body {
     radial-gradient(90% 60% at 50% 120%, oklch(0.72 0.13 72 / 0.1), transparent 60%);
 }
 
-/* ── The keyboard stage ─────────────────────────────────────── */
+/* ── The keyboard stage (landing hero) ──────────────────────── */
 .ch-keyboard {
   --wk: clamp(30px, 4.4vw, 52px); /* white-key width */
   --wh: clamp(120px, 17vw, 190px); /* white-key height */
