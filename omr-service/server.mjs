@@ -14,7 +14,10 @@ const SECRET = process.env.OMR_SERVICE_SECRET;
 const CMD = process.env.AUDIVERIS_CMD || "audiveris";
 const USE_XVFB = process.env.USE_XVFB === "1";
 const PORT = process.env.PORT || 8080;
-const OMR_TIMEOUT_MS = 4 * 60 * 1000;
+// Cap just under Vercel's 300s function limit (the Next /api/omr route waits
+// on this fetch). Render free tier is ~0.1 CPU, so Audiveris is slow; this
+// gives the biggest margin we can without the caller timing out first.
+const OMR_TIMEOUT_MS = 260 * 1000;
 const ALLOWED = /\.(pdf|png|jpe?g|tiff?|bmp)$/i;
 
 const upload = multer({ limits: { fileSize: 20 * 1024 * 1024 } });
