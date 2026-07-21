@@ -1,7 +1,7 @@
 # Deploy — Tasti (gratis: Vercel + Neon + Render)
 
 Architettura: **app Next.js su Vercel** (free), **Neon Postgres** (free) come DB,
-**login Google** (Auth.js), e un **microservizio Audiveris** su **Render** (free)
+**login GitHub** (Auth.js), e un **microservizio Audiveris** su **Render** (free)
 per convertire i PDF. L'app non esegue binari nativi → gira su Vercel.
 
 ## 1. Neon (database, free)
@@ -14,13 +14,13 @@ per convertire i PDF. L'app non esegue binari nativi → gira su Vercel.
    ```
    (Crea le tabelle Auth.js + `song`.)
 
-## 2. Google OAuth (login, free)
-1. https://console.cloud.google.com → APIs & Services → Credentials →
-   **Create OAuth client ID** → tipo **Web application**.
-2. **Authorized redirect URIs**:
-   - `http://localhost:3000/api/auth/callback/google` (dev)
-   - `https://TUO-DOMINIO.vercel.app/api/auth/callback/google` (prod)
-3. Copia Client ID/Secret → `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`.
+## 2. GitHub OAuth (login, free)
+1. https://github.com/settings/developers → **New OAuth App**.
+2. Campi:
+   - **Homepage URL**: `https://TUO-DOMINIO.vercel.app`
+   - **Authorization callback URL**: `https://TUO-DOMINIO.vercel.app/api/auth/callback/github`
+     (per il dev locale crea una seconda app con `http://localhost:3000/api/auth/callback/github`)
+3. Copia Client ID + genera un Client secret → `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`.
 4. Genera `AUTH_SECRET`: `openssl rand -base64 32`.
 
 ## 3. OMR service su Render (PDF, free)
@@ -38,14 +38,14 @@ per convertire i PDF. L'app non esegue binari nativi → gira su Vercel.
 1. Vercel → **Import** del repo (root del progetto).
 2. **Environment Variables**:
    - `NEXT_PUBLIC_SITE_URL` = `https://TUO-DOMINIO.vercel.app`
-   - `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`
+   - `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`
    - `DATABASE_URL` (da Neon)
    - `OMR_SERVICE_URL` (URL Render), `OMR_SERVICE_SECRET` (stesso valore del servizio)
 3. Deploy. Apri il dominio.
 
 ## Verifica
 - `/` landing visibile; `/robots.txt`, `/sitemap.xml`, OG image OK.
-- Login Google → torni su `/app` loggato.
+- Login GitHub → torni su `/app` loggato.
 - Carica un MIDI/MusicXML → suona. Carica un PDF → convertito da Render.
 - "Salva" → compare in `/library`; logout/login altro utente non vede i tuoi brani.
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth, signIn } from "@/auth";
-import { PianoKeysIcon, GoogleLogoIcon } from "@phosphor-icons/react/dist/ssr";
+import { PianoKeysIcon, GithubLogoIcon } from "@phosphor-icons/react/dist/ssr";
 
 export const metadata: Metadata = {
   title: "Accedi",
@@ -30,15 +30,15 @@ export default async function LoginPage() {
         <form
           action={async () => {
             "use server";
-            await signIn("google", { redirectTo: "/app" });
+            await signIn("github", { redirectTo: "/app" });
           }}
         >
           <button
             type="submit"
             className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-white px-4 py-3 font-medium text-zinc-900 transition hover:bg-zinc-100"
           >
-            <GoogleLogoIcon size={20} weight="bold" />
-            Continua con Google
+            <GithubLogoIcon size={20} weight="bold" />
+            Continua con GitHub
           </button>
         </form>
       </div>

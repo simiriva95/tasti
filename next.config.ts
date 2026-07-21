@@ -2,24 +2,23 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
-// Soundfont CDNs used by smplr (audio samples) + Google for OAuth.
+// Soundfont CDNs used by smplr (audio samples). GitHub OAuth is a full-page
+// redirect (no iframe/XHR), so it needs no CSP host beyond avatar images.
 const SOUND_CDN = "https://gleitz.github.io https://smpldsnds.github.io https://goldst.dev";
-const GOOGLE = "https://accounts.google.com";
 
 const csp = [
   `default-src 'self'`,
   // Next.js needs inline runtime; dev also needs eval. wasm for audio libs.
   `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ""}`,
   `style-src 'self' 'unsafe-inline'`,
-  `img-src 'self' data: blob: https://*.googleusercontent.com`,
+  `img-src 'self' data: blob: https://avatars.githubusercontent.com`,
   `font-src 'self' data:`,
-  `connect-src 'self' ${SOUND_CDN} ${GOOGLE}`,
+  `connect-src 'self' ${SOUND_CDN}`,
   `media-src 'self' blob: data: ${SOUND_CDN}`,
-  `frame-src ${GOOGLE}`,
   `worker-src 'self' blob:`,
   `object-src 'none'`,
   `base-uri 'self'`,
-  `form-action 'self' ${GOOGLE}`,
+  `form-action 'self'`,
   `frame-ancestors 'none'`,
 ].join("; ");
 

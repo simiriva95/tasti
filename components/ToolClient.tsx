@@ -9,7 +9,7 @@ import {
   FloppyDiskIcon,
   MusicNotesIcon,
   SignOutIcon,
-  GoogleLogoIcon,
+  GithubLogoIcon,
 } from "@phosphor-icons/react";
 import FileDrop from "@/components/FileDrop";
 import PianoStage from "@/components/PianoStage";
@@ -253,10 +253,10 @@ export default function ToolClient({ user }: { user: SessionUser | null }) {
             </>
           ) : (
             <button
-              onClick={() => signIn("google")}
+              onClick={() => signIn("github")}
               className="flex items-center gap-2 rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900"
             >
-              <GoogleLogoIcon size={16} weight="bold" />
+              <GithubLogoIcon size={16} weight="bold" />
               Accedi
             </button>
           )}

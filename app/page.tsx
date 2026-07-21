@@ -64,7 +64,7 @@ const faqs = [
   },
   {
     q: "Quanto costa?",
-    a: "È gratis. Accedi con Google per salvare i tuoi brani in una libreria personale.",
+    a: "È gratis. Accedi con GitHub per salvare i tuoi brani in una libreria personale.",
   },
 ];
 
