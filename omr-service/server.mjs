@@ -59,8 +59,9 @@ function runAudiveris(input, outDir) {
   const cmdArgs = USE_XVFB ? ["-a", CMD, ...args] : args;
   return new Promise((resolve, reject) => {
     const child = spawn(cmd, cmdArgs, { shell: false });
-    let stderr = "";
-    child.stderr.on("data", (d) => (stderr += d.toString()));
+    let out = "";
+    child.stderr.on("data", (d) => (out += d.toString()));
+    child.stdout.on("data", (d) => (out += d.toString()));
     child.on("error", reject);
     const timer = setTimeout(() => {
       child.kill();
@@ -69,7 +70,7 @@ function runAudiveris(input, outDir) {
     child.on("close", (code) => {
       clearTimeout(timer);
       if (code === 0) resolve();
-      else reject(new Error(stderr.slice(-600) || `Audiveris exit ${code}`));
+      else reject(new Error(out.slice(-900) || `Audiveris exit ${code} (no output)`));
     });
   });
 }

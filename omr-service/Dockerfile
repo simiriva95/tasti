@@ -11,6 +11,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
       curl ca-certificates gnupg fontconfig libfreetype6 tesseract-ocr \
       libgl1 xvfb \
+      libx11-6 libxext6 libxrender1 libxtst6 libxi6 libxrandr2 libasound2t64 \
  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
  && apt-get install -y --no-install-recommends nodejs \
  && curl -L -o /tmp/audiveris.deb \
