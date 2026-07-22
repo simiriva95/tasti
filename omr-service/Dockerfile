@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
  && apt-get install -y --no-install-recommends nodejs \
  && curl -L -o /tmp/audiveris.deb \
-      https://github.com/Audiveris/audiveris/releases/download/5.11.0/Audiveris-5.11.0-ubuntu24.04-x86_64.deb \
+      https://github.com/Audiveris/audiveris/releases/download/5.10.2/Audiveris-5.10.2-ubuntu24.04-x86_64.deb \
  && dpkg-deb -x /tmp/audiveris.deb / \
  && rm -f /tmp/audiveris.deb \
  && rm -rf /var/lib/apt/lists/* \
