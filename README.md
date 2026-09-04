@@ -10,7 +10,7 @@
   <img alt="Docker" src="https://img.shields.io/badge/OMR_service-Docker-2496ED?logo=docker&logoColor=white">
 </p>
 
-<!-- SCREENSHOT: hero shot — the piano stage with falling notes above the 88-key keyboard, a chord lit up, 1280px wide -->
+<p align="center"><img src="docs/screenshots/hero.png" width="820" alt="hero shot — the piano stage with falling notes above the 88-key keyboard, a chord lit up, 1280px wide"></p>
 
 Beginners can read a chord symbol and still not know which keys it maps to, or on which octave. Tasti removes that step: it parses the music you already have — a MIDI export, a MusicXML score, or a scanned or photographed PDF — and renders it as a piano roll that falls onto a real 88-key keyboard, lighting the exact keys and naming the chord. Sheet music that only exists as a PDF or a phone photo goes through an **Audiveris** optical music recognition service running as a separate container, so the Next.js app itself never shells out to a native binary and stays deployable on serverless.
 
@@ -26,7 +26,7 @@ Beginners can read a chord symbol and still not know which keys it maps to, or o
 - **Personal library** — GitHub sign-in (Auth.js v5, database sessions) with per-user saved songs; every library route is owner-scoped in the query itself.
 - **Hardened by default** — a full Content-Security-Policy plus HSTS/nosniff/frame-deny headers, Zod-validated request bodies, upload size caps, and an in-memory rate limit on the public OMR proxy.
 
-<!-- SCREENSHOT: the tempo / sound / colour control bar with a chord label visible -->
+<p align="center"><img src="docs/screenshots/control-bar.png" width="820" alt="the tempo / sound / colour control bar with a chord label visible"></p>
 
 ## Tech stack
 
